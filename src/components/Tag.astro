@@ -1,0 +1,23 @@
+---
+// Tech stack pill. Render inside a <ul class="tags"> list for correct semantics.
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<li class="tag">{label}</li>
+
+<style>
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1;
+    background: var(--tag-bg);
+    color: var(--text-secondary);
+    padding: 0.4rem 0.6rem;
+    border-radius: 999px;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,130 @@
+---
+// Internal reference page for checking the design system. Not linked from the nav.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Tag from "../components/Tag.astro";
+
+const tokens = [
+  { name: "--bg", note: "page background" },
+  { name: "--surface", note: "figures, diagrams" },
+  { name: "--text", note: "headlines, body" },
+  { name: "--text-secondary", note: "descriptions, nav" },
+  { name: "--text-muted", note: "dates, captions" },
+  { name: "--decor-muted", note: "decoration only" },
+  { name: "--border", note: "dividers" },
+  { name: "--tag-bg", note: "stack pills" },
+  { name: "--accent", note: "the one highlight" },
+  { name: "--chart-neutral", note: "non-highlighted marks" },
+];
+---
+
+<BaseLayout title="Style guide">
+  <div class="wrap guide">
+    <section>
+      <p class="label"><span class="slash">//</span> colour tokens</p>
+      <ul class="swatches">
+        {
+          tokens.map((t) => (
+            <li>
+              <span class="chip" style={`background: var(${t.name})`} />
+              <code>{t.name}</code>
+              <span class="note">{t.note}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="specimen">
+      <p class="label"><span class="slash">//</span> type</p>
+      <div><span class="label">h1 · Fraunces</span><h1>Reliable pipelines, <em>clear stories</em></h1></div>
+      <div><span class="label">h2 · Fraunces</span><h2>Orders that arrive late get <em>fewer stars</em></h2></div>
+      <div><span class="label">h3 · Fraunces</span><h3>Grain is the order item, not the order</h3></div>
+      <div>
+        <span class="label">body · Inter</span>
+        <p style="max-width: var(--measure)">
+          I modelled 100k orders into a tested star schema with dbt, then joined delivery dates to review scores to
+          see what drives a bad review. Inline <code>code</code> and a <a href="#">text link</a>.
+        </p>
+      </div>
+      <div>
+        <span class="label">technical · JetBrains Mono</span>
+        <p class="mono" style="font-size: var(--step--1); color: var(--text-secondary)">
+          10 / 2026 · gtfs-rt → dagster → duckdb → dbt → tableau
+        </p>
+      </div>
+      <div>
+        <span class="label">pills</span>
+        <ul class="tags">{["dbt", "duckdb", "tableau"].map((s) => <Tag label={s} />)}</ul>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .guide {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-6);
+  }
+
+  section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .swatches li {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    font-size: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    padding-bottom: var(--space-3);
+  }
+
+  .chip {
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-2);
+  }
+
+  .swatches code,
+  .note {
+    padding-inline: var(--space-3);
+  }
+
+  .swatches code {
+    background: none;
+  }
+
+  .note {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .specimen > div {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .specimen > div {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>

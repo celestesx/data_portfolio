@@ -1,0 +1,76 @@
+---
+import { site } from "../site.config";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap inner">
+    <div>
+      <p class="cta">Hiring for data or analytics engineering? <em>Let's talk.</em></p>
+      <small>© {year} {site.name} · built with astro</small>
+    </div>
+    <ul aria-label="Contact">
+      <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+      <li><a href={site.links.linkedin} rel="me">linkedin ↗</a></li>
+      <li><a href={site.links.github} rel="me">github ↗</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-8);
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-6) var(--space-7);
+  }
+
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-5) var(--space-6);
+  }
+
+  .cta {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    line-height: 1.2;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+
+  .cta em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  small {
+    display: block;
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  ul a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  ul a:hover {
+    color: var(--accent);
+  }
+</style>
