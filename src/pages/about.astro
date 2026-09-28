@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Tag from "../components/Tag.astro";
+import { site, stack } from "../site.config";
+
+// The four stages of an engagement, shown as numbered rows like the project list.
+const approach = [
+  {
+    step: "discover",
+    title: "Sit with the people who have the problem",
+    body: "Requests usually arrive as a solution (\"we need a dashboard\"). I start by finding the decision behind it and who makes it.",
+  },
+  {
+    step: "scope",
+    title: "Write down what done looks like",
+    body: "A one-page brief: the question, the data we actually have, the constraints, and what we'll ship first. Agreed before any code.",
+  },
+  {
+    step: "ship",
+    title: "Get something useful in front of them in weeks",
+    body: "The smallest version that answers the question, built on their stack, then improved with the people using it.",
+  },
+  {
+    step: "hand over",
+    title: "Leave it owned, not just delivered",
+    body: "Tests, docs and a runbook, plus time with whoever maintains it, so it keeps running after I've moved on.",
+  },
+];
+---
+
+<BaseLayout title="About" description={`About ${site.name}, ${site.role}.`}>
+  <div class="wrap about">
+    <section class="intro">
+      <p class="label"><span class="slash">//</span> about</p>
+      <h1>I work where the data meets <em>the people who need it.</em></h1>
+      {/* TODO: replace with your own bio — where you've worked, the kinds of teams, something human. */}
+      <div class="bio">
+        <p>
+          I'm {site.name.split(" ")[0]}, a data and analytics engineer. I build end-to-end: ingestion, tested dbt models,
+          and the dashboards people read on top.
+        </p>
+        <p>
+          What I enjoy most is the forward deployed part of the job: joining a team with messy data and an unclear ask,
+          working out what they actually need, and shipping something they keep using after I leave.
+        </p>
+      </div>
+    </section>
+
+    <section class="approach" aria-labelledby="approach">
+      <h2 id="approach" class="label"><span class="slash">//</span> how I work with teams</h2>
+      <ol class="rows">
+        {
+          approach.map((a, i) => (
+            <li class="row">
+              <span class="num mono" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p class="step mono">{a.step}</p>
+              <div>
+                <h3>{a.title}</h3>
+                <p class="desc">{a.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="stack" aria-labelledby="stack">
+      <h2 id="stack" class="label"><span class="slash">//</span> stack</h2>
+      <dl>
+        {
+          stack.map((g) => (
+            <div>
+              <dt>{g.category}</dt>
+              <dd>
+                <ul class="tags">
+                  {g.tools.map((t) => (
+                    <Tag label={t} />
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: clamp(2.25rem, 7vw, 5.5rem) 0;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 50rem;
+  }
+
+  .bio {
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: var(--text-secondary);
+    max-width: 58ch;
+  }
+
+  .approach,
+  .stack {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  /* Numbered rows, matching the homepage project list */
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 3rem 9rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .num,
+  .step {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+  }
+
+  .step {
+    color: var(--accent);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: var(--space-2);
+  }
+
+  .desc {
+    color: var(--text-secondary);
+    max-width: 58ch;
+  }
+
+  /* Stack grouped by category */
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-5) var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  @media (max-width: 640px) {
+    .row {
+      grid-template-columns: 2rem 1fr;
+    }
+
+    .row > div {
+      grid-column: 2;
+    }
+  }
+</style>

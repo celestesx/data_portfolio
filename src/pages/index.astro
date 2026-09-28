@@ -2,25 +2,13 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Tag from "../components/Tag.astro";
 import { Image } from "astro:assets";
-import { site } from "../site.config";
+import { site, stack } from "../site.config";
 import { getProjects, formatDate, pipelineSummary } from "../lib/projects";
 
 const projects = await getProjects();
 
-const stack = [
-  "python",
-  "sql",
-  "dbt",
-  "duckdb",
-  "snowflake",
-  "dagster",
-  "docker",
-  "terraform",
-  "aws",
-  "github actions",
-  "tableau",
-  "power bi",
-];
+// Every tool from the grouped stack in site.config, minus the generic ones
+const pills = stack.flatMap((g) => g.tools).filter((t) => t !== "rest apis");
 ---
 
 <BaseLayout>
@@ -33,7 +21,7 @@ const stack = [
         quarters. Then I hand them over properly: tested, documented, and owned by the people who use them.
       </p>
       <ul class="tags" aria-label="Core stack">
-        {stack.map((s) => <Tag label={s} />)}
+        {pills.map((s) => <Tag label={s} />)}
       </ul>
     </section>
 
