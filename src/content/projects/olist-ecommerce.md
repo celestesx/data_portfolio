@@ -6,7 +6,7 @@ summary: >-
   100k public Olist orders to answer it, and a dashboard the ops lead can check every Monday.
 date: 2026-10-01
 status: in-progress
-draft: true
+draft: false
 
 client: E-commerce ops team (simulated, public Olist dataset)
 problem: >-
