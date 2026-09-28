@@ -1,0 +1,335 @@
+---
+// Case study template. Every project reuses this layout; content lives in src/content/projects/.
+import { render } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Tag from "../../components/Tag.astro";
+import PipelineStrip from "../../components/PipelineStrip.astro";
+import { getProjects, formatDate, type Project } from "../../lib/projects";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Project };
+const d = project.data;
+const { Content } = await render(project);
+const inProgress = d.status === "in-progress";
+---
+
+<BaseLayout title={d.title} description={d.summary}>
+  <article class="wrap case">
+    <header class="intro">
+      <p class="label">
+        <span class="slash">//</span>{" "}
+        <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time> · {d.client}
+        {inProgress && <span class="status">in progress</span>}
+        {d.draft && <span class="status">draft</span>}
+      </p>
+      <h1>{d.title}</h1>
+      <p class="summary">{d.summary}</p>
+      {
+        (d.links.github || d.links.dashboard) && (
+          <ul class="links">
+            {d.links.github && (
+              <li>
+                <a href={d.links.github}>github repo ↗</a>
+              </li>
+            )}
+            {d.links.dashboard && (
+              <li>
+                <a href={d.links.dashboard}>live dashboard ↗</a>
+              </li>
+            )}
+          </ul>
+        )
+      }
+    </header>
+
+    <section class="engagement" aria-labelledby="engagement">
+      <h2 id="engagement" class="visually-hidden">The engagement</h2>
+      <dl>
+        <div class="wide">
+          <dt>the ask</dt>
+          <dd>{d.problem}</dd>
+        </div>
+        {
+          d.stakeholders.length > 0 && (
+            <div>
+              <dt>worked with</dt>
+              <dd>
+                <ul>
+                  {d.stakeholders.map((s) => (
+                    <li>{s}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+        {
+          d.constraints.length > 0 && (
+            <div>
+              <dt>constraints</dt>
+              <dd>
+                <ul>
+                  {d.constraints.map((c) => (
+                    <li>{c}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+        {
+          d.timeToValue && (
+            <div>
+              <dt>time to first value</dt>
+              <dd class="ttv">{d.timeToValue}</dd>
+            </div>
+          )
+        }
+      </dl>
+    </section>
+
+    <section class="engineering" aria-labelledby="engineering">
+      <p class="label" id="engineering"><span class="slash">//</span> pipeline</p>
+      <PipelineStrip steps={d.pipeline} />
+      {
+        d.stack.length > 0 && (
+          <ul class="tags" aria-label="Stack">
+            {d.stack.map((s) => (
+              <Tag label={s} />
+            ))}
+          </ul>
+        )
+      }
+      {
+        d.architecture && (
+          <figure class="frame">
+            <Image src={d.architecture.src} alt={d.architecture.alt} />
+            <figcaption>Architecture</figcaption>
+          </figure>
+        )
+      }
+    </section>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      d.dashboardEmbed && (
+        <section class="dashboard" aria-labelledby="dashboard">
+          <h2 id="dashboard">The dashboard</h2>
+          <div class="frame embed">
+            <iframe src={d.dashboardEmbed} title={`Dashboard: ${d.title}`} loading="lazy" allowfullscreen />
+          </div>
+        </section>
+      )
+    }
+
+    {
+      (d.outcome || d.results.length > 0) && (
+        <section class="prose" aria-labelledby="outcome">
+          <h2 id="outcome">Outcome</h2>
+          {d.outcome && <p class="lede">{d.outcome}</p>}
+          {d.results.length > 0 && (
+            <ul>
+              {d.results.map((r) => (
+                <li>{r}</li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )
+    }
+
+    {
+      d.handover.length > 0 && (
+        <section class="prose" aria-labelledby="handover">
+          <h2 id="handover">Handover</h2>
+          <ul>
+            {d.handover.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      d.differently.length > 0 && (
+        <section class="prose" aria-labelledby="differently">
+          <h2 id="differently">What I'd do differently</h2>
+          <ul>
+            {d.differently.map((x) => (
+              <li>{x}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <p class="back mono"><a href="/">← all work</a></p>
+  </article>
+</BaseLayout>
+
+<style>
+  .case {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: clamp(2rem, 6vw, 4.5rem) 0;
+  }
+
+  .intro {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 50rem;
+  }
+
+  .status {
+    white-space: nowrap;
+    margin-left: var(--space-2);
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.6875rem;
+  }
+
+  .summary {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: 58ch;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .links a {
+    color: var(--accent);
+  }
+
+  /* Engagement facts: the forward deployed part of the story */
+  .engagement dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-5) var(--space-6);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .engagement .wide {
+    grid-column: 1 / -1;
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .wide dd {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    max-width: 40ch;
+  }
+
+  dd ul {
+    margin: 0;
+    padding-left: 1.1em;
+    color: var(--text-secondary);
+  }
+
+  .ttv {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    color: var(--accent);
+  }
+
+  .engineering {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .frame {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .dashboard {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .embed {
+    padding: 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+  }
+
+  .embed iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* Long-form text, including Markdown rendered by <Content /> */
+  .prose {
+    max-width: var(--measure);
+  }
+
+  .prose :global(h2) {
+    margin: var(--space-7) 0 var(--space-4);
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(h3) {
+    margin: var(--space-5) 0 var(--space-2);
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 var(--space-4);
+  }
+
+  .prose :global(li + li) {
+    margin-top: var(--space-2);
+  }
+
+  .lede {
+    font-size: var(--step-1);
+  }
+
+  .back {
+    font-size: var(--step--1);
+  }
+</style>

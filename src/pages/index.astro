@@ -1,7 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Tag from "../components/Tag.astro";
+import { Image } from "astro:assets";
 import { site } from "../site.config";
+import { getProjects, formatDate, pipelineSummary } from "../lib/projects";
+
+const projects = await getProjects();
 
 const stack = [
   "python",
@@ -32,6 +36,39 @@ const stack = [
         {stack.map((s) => <Tag label={s} />)}
       </ul>
     </section>
+
+    {
+      projects.length > 0 && (
+        <section class="work" aria-labelledby="work">
+          <h2 id="work" class="label">
+            <span class="slash">//</span> selected work
+          </h2>
+          <ol class="rows">
+            {projects.map((p, i) => (
+              <li class="row">
+                <span class="num mono" aria-hidden="true">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div class="body">
+                  <p class="meta mono">
+                    <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time>
+                    {p.data.status === "in-progress" && <span class="status">in progress</span>}
+                  </p>
+                  <h3>
+                    <a href={`/projects/${p.id}/`}>{p.data.title}</a>
+                  </h3>
+                  <p class="client">{p.data.client}</p>
+                  <p class="pipe mono">{pipelineSummary(p)}</p>
+                </div>
+                {p.data.thumbnail && (
+                  <Image class="thumb" src={p.data.thumbnail.src} alt={p.data.thumbnail.alt} width={240} />
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
   </div>
 </BaseLayout>
 
@@ -47,5 +84,102 @@ const stack = [
     line-height: 1.5;
     color: var(--text-secondary);
     max-width: 54ch;
+  }
+
+  /* Project list: numbered editorial rows */
+  .work {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    gap: var(--space-4);
+    align-items: start;
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .num {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    padding-top: 0.2rem;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .status {
+    white-space: nowrap;
+    margin-left: var(--space-2);
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 0.6875rem;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  /* Stretch the link over the whole row so the entire row is clickable */
+  h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .row:hover h3 a {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+
+  .client {
+    color: var(--text-secondary);
+  }
+
+  .pipe {
+    font-size: var(--step--1);
+    color: var(--text-secondary);
+  }
+
+  .thumb {
+    width: 240px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .row {
+      grid-template-columns: 2rem 1fr;
+    }
+
+    .thumb {
+      grid-column: 2;
+      width: 100%;
+    }
   }
 </style>
